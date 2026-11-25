@@ -2,9 +2,7 @@ import os
 import pendulum
 
 from airflow.sdk import DAG, task
-from airflow.providers.amazon.aws.transfers.local_to_s3 import (
-    LocalFileSystemToS3Operator,
-)
+from airflow.providers.amazon.aws.transfers.local_to_s3 import LocalFileSystemToS3Operator
 from airflow.providers.amazon.aws.operators.glue_crawler import GlueCrawlerOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.providers.amazon.aws.operators.emr import (
@@ -20,10 +18,7 @@ from src.fetch_data import (
 )
 
 
-# ---------------------------------------------------------------------------
 # AWS configuration
-# ---------------------------------------------------------------------------
-
 AWS_CONN_ID = "aws_default"
 
 S3_RAW_BUCKET = os.getenv("NYC_TAXI_BUCKET")
@@ -49,10 +44,7 @@ END_YEAR = 2026
 END_MONTH = 9
 
 
-# ---------------------------------------------------------------------------
 # Configuration validation
-# ---------------------------------------------------------------------------
-
 required_configs = {
     "NYC_TAXI_BUCKET": S3_RAW_BUCKET,
     "DEST_BUCKET": DEST_BUCKET,
@@ -69,10 +61,7 @@ for config_name, config_value in required_configs.items():
         raise ValueError(f"{config_name} is not configured")
 
 
-# ---------------------------------------------------------------------------
 # S3 and EMR configuration
-# ---------------------------------------------------------------------------
-
 if not S3_TARGET_PATH.startswith("s3://"):
     raise ValueError("S3_TARGET_PATH must be a valid S3 URI.")
 
@@ -122,8 +111,6 @@ def get_processed_s3_uri(dataset: str) -> str:
         f"year={config['year']}/"
         f"month={config['month']:02d}/"
     )
-
-
 
 # DAG definition
 with DAG(
