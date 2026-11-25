@@ -15,7 +15,6 @@ TARGET_PATH = f"s3://{s3_BUCKET}/processed/yellow/"
 
 
 def main():
-
     spark = (
         SparkSession.builder
         .appName("Yellow-Taxi-Transformation")

@@ -15,7 +15,6 @@ TARGET_PATH = f"s3://{s3_BUCKET}/processed/green/"
 
 
 def main():
-
     spark = (
         SparkSession.builder
         .appName("Green-Taxi-Transformation")
@@ -75,9 +74,7 @@ def main():
         .partitionBy("pickup_year", "pickup_month")
         .parquet(TARGET_PATH)
     )
-
     print("Green Taxi transformation completed.")
-
     spark.stop()
 
 
