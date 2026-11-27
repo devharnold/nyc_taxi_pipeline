@@ -6,13 +6,13 @@ from pyspark.sql.functions import (
     month,
     unix_timestamp,
 )
+from datetime import date
 
-# Configuration
-s3_BUCKET = os.getenv("s3_BUCKET_NAME")
+SOURCE_PATH = f"s3://devharnold-nyc-taxi-data-bucket/raw/yellow/"
+TARGET_PATH = f"s3://devharnold-nyc-taxi-data-bucket/processed/yellow/"
 
-SOURCE_PATH = f"s3://{s3_BUCKET}/raw/yellow/"
-TARGET_PATH = f"s3://{s3_BUCKET}/processed/yellow/"
-
+START_DATE = "2021-01-01"
+END_DATE = date.today().isoformat()
 
 def main():
     spark = (
@@ -43,6 +43,12 @@ def main():
         (col("dropoff_datetime").isNotNull()) &
         (col("trip_distance") > 0) &
         (col("total_amount") > 0)
+    )
+
+    # Filter datasets from January 2021 to date: (current date of ingestion update)
+    df = df.filter(
+        (col("pickup_datetime") >= START_DATE) &
+        (col("pickup_datetime") < date.today().isoformat())
     )
 
     # Calculate trip duration in minutes
@@ -86,4 +92,4 @@ if __name__ == "__main__":
 
 # TODO: This is the command used to upload the spark script to s3 for use by EMR Serverless
 #aws s3 cp src/spark_jobs/yellow_taxi/transform_yellow.py \
-#s3://nyc-taxi-data/scripts/transform_yellow.py
+#s3://devharnold-nyc-taxi-data/scripts/transform_yellow.py
